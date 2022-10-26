@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "666361716205",
+    "project_id": "chatify-bb577",
+    "storage_bucket": "chatify-bb577.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:666361716205:android:9560bb1fb0be024d6c5be4",
+        "android_client_info": {
+          "package_name": "com.gyanashreegiri.chatify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "666361716205-86edfq4t3nnsirpi1mjfj3vjiacig3oq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfBIYs8M63_OqNa4fKPcVXWh7BenafMsg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "666361716205-86edfq4t3nnsirpi1mjfj3vjiacig3oq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
