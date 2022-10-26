@@ -85,7 +85,9 @@ class _ChatScreenState extends State<ChatScreen> {
               if((messageSender == firebaseUser?.email || messageSender == friend) && (messageReceiver == friend || messageReceiver == firebaseUser?.email)){
                 final messageText = message.get('text');
                 bool isMe = messageSender == firebaseUser?.email;
-                final messageWidget = MessageBubbles(text: messageText, friend: friendUsername, friendImage: friendImage, isMe: isMe);
+                String? myImg  =  _auth.currentUser?.photoURL;
+
+                final messageWidget = MessageBubbles(text: messageText, friend: isMe ? "You" : friendUsername, friendImage: isMe ? myImg : friendImage, isMe: isMe);
                 messagebubbles.add(messageWidget);
               }
 
@@ -141,10 +143,10 @@ class _ChatScreenState extends State<ChatScreen> {
 class MessageBubbles extends StatelessWidget {
   final String text;
   final String friend;
-  final String friendImage;
+  final String? friendImage;
   final bool isMe;
 
-  MessageBubbles({required this.text, required this.friend, required this.isMe, required this.friendImage});
+  MessageBubbles({required this.text, required this.friend, required this.isMe,  this.friendImage});
   @override
   Widget build(BuildContext context) {
     return Padding(

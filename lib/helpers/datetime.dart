@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
     var diff = now.difference(messageDate);
     if(diff.inDays == 0){
       if(diff.inHours != 0){
-        sentDate = '${diff.inHours}:${diff.inMinutes}';
+        sentDate = '${diff.inHours}:${diff.inMinutes.clamp(1, 2).toSigned(3)}';
       }
       else if(diff.inMinutes != 0){
         sentDate = '${diff.inMinutes} minutes ago';

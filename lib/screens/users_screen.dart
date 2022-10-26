@@ -81,12 +81,6 @@ class _UserScreenState extends State<UserScreen> with WidgetsBindingObserver {
     }
     changeStatus();
   }
-
-  // List<UserBubble> buildFriendList({required QueryDocumentSnapshot<Object?> message, dynamic friend}){
-  //
-  //
-  //   return senderWidgets;
-  // }
   @override
   void deactivate() {
     // TODO: implement deactivate
@@ -94,10 +88,6 @@ class _UserScreenState extends State<UserScreen> with WidgetsBindingObserver {
     super.deactivate();
   }
 
-  /*
-    Dispose is called when the State object is removed, which is permanent.
-    This method is where you should unsubscribe and cancel all animations, streams, etc.
-    */
   @override
   void dispose() {
     // TODO: implement dispose
@@ -121,6 +111,12 @@ class _UserScreenState extends State<UserScreen> with WidgetsBindingObserver {
                           child: CircularProgressIndicator(
                             backgroundColor: kprimaryColor,
                           ),
+              );
+            }
+            if (snapshot.hasError) {
+              return const Text(
+                "Something went wrong",
+                style: TextStyle(color: Colors.black),
               );
             }
             if (snapshot.hasData) {
@@ -149,13 +145,28 @@ print(friends[0].email);
 
               }
             }
-            return StreamBuilder<QuerySnapshot>(stream:  _firestore.collection('users')
-                .snapshots(),
+            return FutureBuilder<QuerySnapshot>(future:  _firestore.collection('users')
+                .get(),
                 builder: (context, users){
+                  if(snapshot.connectionState == ConnectionState.waiting){
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        backgroundColor: kprimaryColor,
+                      ),
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return const Text(
+                      "Something went wrong",
+                      style: TextStyle(color: Colors.black),
+                    );
+                  }
               if (snapshot.hasData) {
               final user = users.data?.docs;
-
-              for(var friend in user!){
+              if(user == null){
+                return Text("Something went wrong");
+              }
+              for(var friend in user){
                 try{
                   final result = friends.firstWhere((a) => a.email == (friend.get('email')));
 
@@ -166,7 +177,7 @@ print(friends[0].email);
                                               friend: result.email,
                                               text: result.text,
                                               sentDate: result.date,
-                                              //status: user.get('isOnline'),
+                                              status: friend.get('isOnline'),
                                               image: friend.get('image'));
                                           senderWidgets.add(senderWidget);
 
@@ -179,6 +190,7 @@ print(friends[0].email);
                 }
               }
 
+
               return ListView(
                 children: senderWidgets
               );
@@ -187,135 +199,7 @@ print(friends[0].email);
           },
         )
 
-        // body: StreamBuilder<QuerySnapshot>(
-        //     stream: _firestore.collection('messages').snapshots(),
-        //     builder: (context, snapshot) {
-        //       if (snapshot.hasError) {
-        //         return const Text(
-        //           "Something went wrong",
-        //           style: TextStyle(color: Colors.black),
-        //         );
-        //       }
-        //       if (snapshot.connectionState == ConnectionState.waiting) {
-        //         return const Center(
-        //           child: CircularProgressIndicator(
-        //             backgroundColor: kprimaryColor,
-        //           ),
-        //         );
-        //       }
-        //       if (snapshot.hasData) {
-        //         final messages = snapshot.data?.docs;
-        //         final friends = [];
-        //         for (var message in messages!) {
-        //           final sender = message.get('sender');
-        //           final receiver = message.get('receiver');
-        //           final currUser = _currUserEmail;
-        //           if (sender == currUser || receiver == currUser) {
-        //
-        //
-        //             final friend = sender == currUser ? receiver : sender;
-        //             if (!friends.contains(friend)) {
-        //               friends.add(friend);
-        //               QueryDocumentSnapshot<Map<String, dynamic>> user;
-        //               UserBubble senderWidget;
-        //               final timestamp = message.get('timestamp');
-        //               var sentDate = datetime.getDatetime(timestamp.seconds);
-        //               final snapshots = _firestore
-        //                   .collection('users')
-        //                   .where('email', isEqualTo: friend)
-        //                   .get();
-        //               snapshots.then((value) => {
-        //                 if (value != null)
-        //                   {
-        //                     user = value.docs[0],
-        //                     senderWidget = UserBubble(
-        //                         username: user.get('username'),
-        //                         friend: friend,
-        //                         text: message.get('text'),
-        //                         sentDate: sentDate,
-        //                         //status: user.get('isOnline'),
-        //                         image: user.get('image')),
-        //                     senderWidgets.add(senderWidget),
-        //
-        //                   }
-        //               });
-        //             }
-        //           }
-        //         }
-        //
-        //       }
-        //       return ListView(
-        //         children: senderWidgets,
-        //       );
-        //     })
         );
   }
 }
 
-class UserBubble extends StatelessWidget {
-  final String friend;
-  final String text;
-  final String image;
-  final String username;
-  final String sentDate;
-  final bool status = true;
-  //required this.status
-  UserBubble({
-    required this.friend,
-    required this.text,
-    required this.image,
-    required this.username,
-    required this.sentDate,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final img = 'images/avatar/avatar$image.png';
-    print(this.friend);
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-      color: Colors.white,
-      elevation: 4,
-      child: ListTile(
-        title: Text(username, style: kDarkHeading),
-        subtitle: Text(text, style: kLightSubHeading),
-        trailing: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Container(
-              width: 10.0,
-              height: 10.0,
-              decoration: BoxDecoration(
-                color: status ? Colors.green : Colors.red,
-                shape: BoxShape.circle,
-              ),
-            ),
-            Text(sentDate, style: kLightSubHeading),
-          ],
-        ),
-        leading: CircleAvatar(
-          backgroundColor: Colors.blueGrey,
-          minRadius: 16,
-          maxRadius: 20,
-          child: CircleAvatar(
-            backgroundImage: AssetImage(img),
-            onBackgroundImageError: (e, s) {
-              debugPrint('image issue, $e,$s');
-            },
-            minRadius: 10,
-            maxRadius: 18,
-            backgroundColor: Colors.white,
-          ),
-        ),
-        onTap: () {
-          Navigator.pushNamed(context, ChatScreen.id, arguments: {
-            'friend': friend,
-            'friendUsername': username,
-            'friendImage': img
-          });
-        },
-      ),
-    );
-  }
-}
