@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/message_bubbles.dart';
+import '../utils/user_avatar.dart';
+
 class ChatScreen extends StatefulWidget {
   static const id = "chat_screen";
 
@@ -52,12 +55,32 @@ class _ChatScreenState extends State<ChatScreen> {
     final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
 
     final String friend = arguments["friend"];
-    final String friendUsername = arguments["friendUsername"];
+    final String friendUsername = arguments["friendUsername"] ?? "User";
     final String friendImage = arguments["friendImage"];
+    final bool friendStatus = arguments["status"];
     return Scaffold(
       backgroundColor: Color(0xFFF6F6F6),
       appBar: AppBar(
-        title: Text('Sebastian'),
+        title: Row(
+         mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            UserAvatar(img:friendImage),
+            const SizedBox(width: 6.0,),
+            Text(friendUsername , style: kAppBarHeading,),
+            const SizedBox(width: 4.0,),
+            Container(
+              width: 10.0,
+              height: 10.0,
+              decoration: BoxDecoration(
+                color: friendStatus ? Colors.green : Colors.red,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ],
+        ),
+        scrolledUnderElevation: 6.0,
+        shadowColor: Theme.of(context).colorScheme.shadow,
+        backgroundColor: kprimaryColor,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -139,46 +162,3 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
-
-class MessageBubbles extends StatelessWidget {
-  final String text;
-  final String friend;
-  final String? friendImage;
-  final bool isMe;
-
-  MessageBubbles({required this.text, required this.friend, required this.isMe,  this.friendImage});
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-      child: Column(
-        crossAxisAlignment: isMe? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          Text(friend, style: TextStyle(
-              color: Colors.black38,
-            fontSize: 12.0
-          ),),
-
-          Padding(
-            padding: const EdgeInsets.all(3.0),
-            child: Material(
-              elevation: 5.0,
-              borderRadius: isMe ? const BorderRadius.only(topLeft: Radius.circular(30.0), bottomLeft: Radius.circular(30.0), bottomRight: Radius.circular(30.0), topRight: Radius.circular(0.0)) :
-              const BorderRadius.only(topLeft: Radius.circular(0.0), bottomLeft: Radius.circular(30.0), bottomRight: Radius.circular(30.0), topRight: Radius.circular(30.0)),
-              color: isMe ? kprimaryColor: Colors.grey,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                child: Text(text, style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15.0
-                ),),
-              ),
-            ),
-          ),
-
-        ],
-      )
-    );
-  }
-}
-

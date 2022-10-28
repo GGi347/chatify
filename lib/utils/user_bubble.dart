@@ -1,4 +1,5 @@
 import 'package:chatify/constants.dart';
+import 'package:chatify/utils/user_avatar.dart';
 import 'package:flutter/material.dart';
 import '../screens/chat_screen.dart';
 
@@ -45,25 +46,13 @@ class UserBubble extends StatelessWidget {
             Text(sentDate, style: kLightSubHeading),
           ],
         ),
-        leading: CircleAvatar(
-          backgroundColor: Colors.blueGrey,
-          minRadius: 16,
-          maxRadius: 20,
-          child: CircleAvatar(
-            backgroundImage: AssetImage(img),
-            onBackgroundImageError: (e, s) {
-              debugPrint('image issue, $e,$s');
-            },
-            minRadius: 10,
-            maxRadius: 18,
-            backgroundColor: Colors.white,
-          ),
-        ),
+        leading: UserAvatar(img:img),
         onTap: () {
           Navigator.pushNamed(context, ChatScreen.id, arguments: {
             'friend': friend,
             'friendUsername': username,
-            'friendImage': img
+            'friendImage': img,
+            'status': status
           });
         },
       ),

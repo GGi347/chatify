@@ -10,6 +10,12 @@ const kSendButtonTextStyle = TextStyle(
   fontSize: 18.0,
 );
 
+const kAppBarHeading = TextStyle(
+  color: Colors.white,
+  fontWeight: FontWeight.bold,
+  fontSize: 18.0,
+);
+
 const kLightSubHeading = TextStyle(
   color: Colors.black54,
   fontSize: 12.0,
