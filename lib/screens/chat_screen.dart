@@ -2,7 +2,7 @@ import 'package:chatify/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import '../helpers/datetime.dart' as datetime;
 import '../utils/message_bubbles.dart';
 import '../utils/user_avatar.dart';
 
@@ -107,10 +107,12 @@ class _ChatScreenState extends State<ChatScreen> {
               final messageReceiver = message.get('receiver');
               if((messageSender == firebaseUser?.email || messageSender == friend) && (messageReceiver == friend || messageReceiver == firebaseUser?.email)){
                 final messageText = message.get('text');
+                final timestamp = message.get('timestamp');
+                final sentDate = datetime.getDatetime(timestamp.seconds);
                 bool isMe = messageSender == firebaseUser?.email;
                 String? myImg  =  _auth.currentUser?.photoURL;
 
-                final messageWidget = MessageBubbles(text: messageText, friend: isMe ? "You" : friendUsername, friendImage: isMe ? myImg : friendImage, isMe: isMe);
+                final messageWidget = MessageBubbles(text: messageText, sentDate: sentDate, friend: isMe ? "You" : friendUsername, friendImage: isMe ? myImg : friendImage, isMe: isMe);
                 messagebubbles.add(messageWidget);
               }
 

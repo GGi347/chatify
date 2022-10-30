@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Chatify",
-      theme: ThemeData.dark().copyWith(
+      theme: ThemeData.light().copyWith(
         backgroundColor: Colors.white
       ),
       debugShowCheckedModeBanner: false,

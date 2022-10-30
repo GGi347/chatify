@@ -5,7 +5,7 @@ import '../Data/users.dart';
 import '../constants.dart';
 import '../helpers/datetime.dart' as datetime;
 import '../utils/user_bubble.dart';
-import 'chat_screen.dart';
+import '../helpers/custom_search_delegate.dart';
 
 final _auth = FirebaseAuth.instance;
 
@@ -98,7 +98,6 @@ class _UserScreenState extends State<UserScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
 
     List<UserBubble> senderWidgets = [];
-    print(senderWidgets);
     return Scaffold(
         appBar: AppBar(
           title: const Text('CHATIFY', style: kAppBarHeading,),
@@ -110,6 +109,11 @@ class _UserScreenState extends State<UserScreen> with WidgetsBindingObserver {
             child: Image.asset('images/chatify.png',),
           ),
           backgroundColor: kprimaryColor,
+          actions: [
+            IconButton(onPressed: (){
+              showSearch(context: context, delegate: CustomSearchDelegate());
+            }, icon: const Icon(Icons.search))
+          ],
         ),
         backgroundColor: kUserScreenBg,
         body: Padding(
@@ -117,7 +121,6 @@ class _UserScreenState extends State<UserScreen> with WidgetsBindingObserver {
           child: FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
             future: _firestore.collection('messages').get(),
             builder: (context, snapshot) {
-              List<Text> senders = [];
               List<AppUser> friends = [];
               if(snapshot.connectionState == ConnectionState.waiting){
                 return const Center(
@@ -143,17 +146,19 @@ class _UserScreenState extends State<UserScreen> with WidgetsBindingObserver {
                   if (sender == currUser || receiver == currUser) {
                     AppUser friend = AppUser.origin();
                     friend.email = sender == currUser ? receiver : sender;
-                    bool isPresent = friends.any((item) => item.email == friend.email);
-                    if (!isPresent) {
-                      friends.add(friend);
-                      QueryDocumentSnapshot<Map<String, dynamic>> user;
-                      UserBubble senderWidget;
+                    final currFriend = friends.where((item) => item.email == friend.email);
+                    final timestamp = message.get('timestamp');
+                    final date = timestamp.seconds;
+                    if (currFriend.isEmpty || currFriend.elementAt(0).timestamp < date ) {
+                      if(currFriend.isNotEmpty){
+                        friends.remove(currFriend.elementAt(0));
+                      }
 
-                      final timestamp = message.get('timestamp');
-                      friend.date = datetime.getDatetime(timestamp.seconds);
+                      friends.add(friend);
+                      friend.date = datetime.getDatetime(date);
                       friend.text = message.get('text');
-print(friends[0].email);
                     }
+
                   }
 
                 }
@@ -177,7 +182,7 @@ print(friends[0].email);
                 if (snapshot.hasData) {
                 final user = users.data?.docs;
                 if(user == null){
-                  return const Center(child:  Text("Please Wait", style: kLightSubHeading,));
+                  return const Center(child:  CircularProgressIndicator(backgroundColor: kprimaryColor,));
                 }
                 for(var friend in user){
                   try{
@@ -193,9 +198,8 @@ print(friends[0].email);
                                               image: friend.get('image'));
                                           senderWidgets.add(senderWidget);
                   }catch(e){
-                    print(e);
-                  }
 
+                  }
 
                   }
                 }
@@ -213,4 +217,6 @@ print(friends[0].email);
         );
   }
 }
+
+
 

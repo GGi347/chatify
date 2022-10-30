@@ -6,8 +6,9 @@ class MessageBubbles extends StatelessWidget {
   final String friend;
   final String? friendImage;
   final bool isMe;
+  final String sentDate;
 
-  MessageBubbles({required this.text, required this.friend, required this.isMe,  this.friendImage});
+  MessageBubbles({required this.text, required this.friend, required this.isMe,  this.friendImage, required this.sentDate});
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -15,6 +16,7 @@ class MessageBubbles extends StatelessWidget {
         child: Column(
           crossAxisAlignment: isMe? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
+            Text(sentDate, style: kLightSubHeading,),
             Text(friend, style: TextStyle(
                 color: Colors.black38,
                 fontSize: 12.0
